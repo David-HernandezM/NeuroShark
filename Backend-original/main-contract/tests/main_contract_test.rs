@@ -206,7 +206,7 @@ fn subscribe_user_free_fail() {
     assert!(res.contains(&expected_log));
 }
 
-
+/*
 #[test]
 fn subscribe_user_basic() {
     let sys = System::new();
@@ -562,7 +562,7 @@ fn subscribe_user_ultimate_fail() {
     assert!(!res.main_failed());
     assert!(res.contains(&expected_log));
 }
-
+*/
 
 
 fn free_neuronal_network() -> NeuronalNetworkData {

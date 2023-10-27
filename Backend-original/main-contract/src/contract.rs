@@ -10,15 +10,6 @@ use program_io::{
     State
 };
 
-// Free:
-// Xor
-
-// Basic:
-// Xor, And
-
-// Ultimate:
-// Xor, And
-
 static mut CONTRACT: Option<Contract> = None;
 
 #[no_mangle]
@@ -77,7 +68,7 @@ async fn main() {
             let period = Period::default();
             let user_id = msg::source();
             
-            if contract.users_subscriptions.contains_key(&user_id) {
+            if contract.users_subscriptions.get(&user_id).is_some() { //.contains_key(&user_id) {
                 msg::reply(ContractEvent::UserAlreadySubscribed(user_id), 0)
                     .expect("Failed to reply 'ContractEvent::UserAlreadySubscribed(ActorId)'");
                 return;
@@ -150,6 +141,7 @@ async fn main() {
                 },
                 SubscriptionType::Ultimate => {
                     let value = msg::value() as u64;
+                    
                     if value != contract.ultimate_plan_price {
                         msg::reply(ContractEvent::WrongFunds(contract.ultimate_plan_price), value as u128)
                             .expect("Failed to reply 'ContractEvent::WrongFunds(u64)'");
@@ -200,7 +192,7 @@ async fn main() {
             }
             
             msg::reply(ContractEvent::Subscribed, 0)
-                .expect("Failed to reply 'ContractEvent::Subscribed'");
+                .expect("Failed to reply with 'ContractEvent::Subscribed'");
         },
         ContractAction::UpdateSubscription { subscriber } => {
             let contract_id = exec::program_id();

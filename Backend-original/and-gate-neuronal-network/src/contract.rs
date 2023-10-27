@@ -35,8 +35,7 @@ extern "C" fn handle() {
     
     match action {
         LogicGateAction::AcceptUser(user_id) => {
-            let user_id = msg::source();
-            if user_id !=  xgnn.main_contract {
+            if msg::source() != xgnn.main_contract {
                 msg::reply(LogicGateEvent::UserIsNotTheOwner, 0)
                     .expect("Error in reply prediction");
                 return;
@@ -72,11 +71,12 @@ extern "C" fn handle() {
                 .expect("Failed to reply 'XGNNEvent::SubscriptionUpdated'");
         },
         LogicGateAction::Predict(data) => {
-            if xgnn.users_accepted.get(&msg::source()) == None {
+            if xgnn.users_accepted.get(&msg::source()).is_none() {
                 msg::reply(LogicGateEvent::UserIsNotSubscribed, 0)
                     .expect("Failed to reply 'XGNNEvent::UserIsNotSubscribed'");
                 return;
             }
+            
             if *xgnn.users_accepted.get(&msg::source()).unwrap() {
                 msg::reply(LogicGateEvent::SubscriptionExpired, 0)
                     .expect("Failed to reply 'XGNNEvent::SubscriptionExpired'");
@@ -87,15 +87,17 @@ extern "C" fn handle() {
                 BinaryLogic::One => String::from("1.0"),
                 _ => String::from("0.0")
             };
+            
             let val2 = match data.1 {
                 BinaryLogic::One => String::from("1.0"),
                 _ => String::from("0.0")
             };
+            
             let inputs = vec![val1, val2];
             
             let prediction = xgnn.network.feed_forward(inputs);
             msg::reply(LogicGateEvent::Prediction(prediction), 0)
-                .expect("Error in reply prediction");
+                .expect("Error in reply and prediction");
         }
     }
 }
