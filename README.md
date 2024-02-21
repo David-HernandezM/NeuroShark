@@ -1,2 +1,2 @@
 # NeuroShark
-Decentralized Neuronal Network for Vara Network
+Decentralized Neuronal Network for Vara Network.
