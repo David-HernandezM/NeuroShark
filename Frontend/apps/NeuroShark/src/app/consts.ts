@@ -14,7 +14,7 @@ export const { seed } = GearKeyring.generateSeed(mnemonic);
 
 
 export const ADDRESS = {
-  NODE: import.meta.env.VITE_NODE_ADDRESS,
+  NODE: 'wss://testnet.vara.network', // import.meta.env.VITE_NODE_ADDRESS,
   BACK: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
   GAME: import.meta.env.VITE_CONTRACT_ADDRESS as HexString,
 };

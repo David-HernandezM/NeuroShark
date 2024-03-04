@@ -45,7 +45,7 @@ export default function DoodleDemoNN() {
     
     console.log(userLastPrediction);
 
-    const probabilities = userLastPrediction.map((probability: string) => {
+    const probabilities: number[] = userLastPrediction.map((probability: string) => {
       const [num, den] = probability.split(' / ');
       return Number(num) / Number(den);
     });
@@ -53,7 +53,7 @@ export default function DoodleDemoNN() {
     console.log("Probabilities in number: ");
     console.log(probabilities);
     
-    const maxValue = Math.max(probabilities);
+    const maxValue = Math.max(...probabilities);
 
     console.log("Max value: ", maxValue);
     

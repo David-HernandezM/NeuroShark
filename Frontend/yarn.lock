@@ -5475,9 +5475,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"battleship@workspace:apps/battleship":
+"battleship@workspace:apps/NeuroShark":
   version: 0.0.0-use.local
-  resolution: "battleship@workspace:apps/battleship"
+  resolution: "battleship@workspace:apps/NeuroShark"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/gasless-transactions": "workspace:*"
