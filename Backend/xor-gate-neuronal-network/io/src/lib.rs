@@ -1,14 +1,10 @@
 #![no_std]
-use gstd::{prelude::*, Vec, ActorId, HashMap};
-use gmeta::{Metadata, In, Out, InOut};
+use gstd::{prelude::*, Vec, ActorId, collections::HashMap};
+use gmeta::{Metadata, InOut};
 
-pub mod network;
+pub mod fraction;
 pub mod matrix;
-pub mod exponentiation_str;
-pub mod division_str;
-pub mod multiplication_str;
-pub mod sums_str;
-pub mod subtraction_str;
+pub mod network;
 pub mod utils;
 
 use network::Network; 
@@ -20,29 +16,51 @@ pub type UserId = ActorId;
 pub type Expired = bool;
 
 impl Metadata for ProgramMetadata {
-    type Init = InOut<ActorId,LogicGateEvent>;
+    type Init = InOut<InitContract,LogicGateEvent>;
     type Handle = InOut<LogicGateAction, LogicGateEvent>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<State>;
+    type State = InOut<LogicNNStateQuery, LogicNNStateReply>;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct InitContract {
+    owner: ActorId,
+    main_contract: ActorId
 }
 
 pub struct LogicGate {
-    pub users_accepted: HashMap<ActorId, Expired>,
+    pub owner: ActorId,
+    pub users_accepted: HashMap<ActorId, UserData>,
     pub main_contract: ActorId,
     pub network: Network
 }
 
+#[derive(Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct UserData {
+    pub subscription_expired: Expired,
+    pub last_prediction: String
+}
+
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum LogicGateAction {
     AcceptUser(ActorId),
     UserSubscriptionExpired(ActorId),
     UserSubscriptionRenewed(ActorId),
+    ChangeMainContract(ActorId),
     Predict((BinaryLogic, BinaryLogic)),
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum LogicGateEvent {
     NeuronalNetworkCreated,
     UserIsNotTheOwner,
@@ -50,39 +68,68 @@ pub enum LogicGateEvent {
     SubscriptionUpdated,
     SubscriptionExpired,
     UserAccepted,
-    Prediction(Vec<String>)   
+    MainContractChanged,
+    Prediction(String) // Prediction(Vec<String>)   
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum LogicNNStateQuery {
+    SubscriptionExpired(ActorId),
+    UserIsSubscribed(ActorId),
+    UserLastPrediction(ActorId),
+    All
+}
+
+#[derive(Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum LogicNNStateReply {
+    SubscriptionExpired(bool),
+    UserLastPrediction(String),
+    UserIsSubscribed(bool),
+    UserIsNotSubscribed,
+    All(State)
+}
+
+#[derive(Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
-    pub users_accepted: Vec<(ActorId, bool)>,
+    pub users_accepted: Vec<(ActorId, UserData)>,
+    pub owner: ActorId,
     pub main_contract: ActorId,
-    pub network: Network  
+    pub network: String //Network  
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum BinaryLogic {
     One,
     Zero
 }
 
-impl From<LogicGate> for State {
-    fn from(value: LogicGate) -> Self {
+impl From<&LogicGate> for State {
+    fn from(value: &LogicGate) -> Self {
         let LogicGate {
             users_accepted,
             main_contract,
-            network
+            owner,
+            ..
         } = value;
         
         let users_accepted = users_accepted
             .iter()
-            .map(|(user, accepted)| (*user, *accepted))
+            .map(|(user, user_data)| (*user, user_data.clone()))
             .collect();
             
         Self {
             users_accepted,
-            main_contract,
-            network
+            main_contract: *main_contract,
+            owner: *owner,
+            network: String::from("Xor neuronal network")
         }
     }
 } 

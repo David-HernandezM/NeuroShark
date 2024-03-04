@@ -1,0 +1,35 @@
+.index-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 180px;
+    gap: 40px;
+}
+
+.index-container__title {
+    color: #51BBB1;
+    font-weight: 700;
+    font-size: 60px;
+    text-align: center;
+}
+
+.index-container__description {
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    max-width: 80%;
+}
+
+.index-container__button-account {
+    font-size: 20px;
+    font-weight:700;
+    min-width: 180px;
+    background-color: #51BBB1;
+    border-radius: 25px;
+    padding: 10px 15px;
+    color: black;
+    transition: all 0.2s;
+    max-width: 100px;
+    text-align: center;
+}

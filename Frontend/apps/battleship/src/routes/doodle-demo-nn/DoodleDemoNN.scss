@@ -1,0 +1,42 @@
+.doodle-demo-nn {
+    margin-top: 70px;
+}
+
+.doodle-demo-nn__work-space {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-items: center;
+    gap: 40px;
+}
+
+.doodle-demo-nn__container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    width: 100%;
+}
+
+.doodle-demo-nn__description-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 17px;
+    gap: 15px;
+}
+
+.doodle-demo-nn__tittle {
+    font-size: 55px;
+    color: #51BBB1;
+}
+
+.doodle-demo-nn__text-description {
+    color: #51BBB1;
+}
+
+.doodle-demo-nn__prediction-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+}

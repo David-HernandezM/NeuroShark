@@ -1,0 +1,34 @@
+.xor-demo-nn {
+    margin-top: 70px;
+}
+
+.xor-demo-nn__work-space {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-items: center;
+    gap: 40px;
+}
+
+.xor-demo-nn__container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    width: 100%;
+    }
+
+.xor-demo-nn__tittle {
+    font-size: 55px;
+    color: #51BBB1;
+}
+
+.xor-demo-nn__char {
+    text-align: center !important;
+    font-size: 100px;
+    padding: 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    min-width: 90px;
+}

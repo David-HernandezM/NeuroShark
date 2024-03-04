@@ -1,5 +1,5 @@
 #![no_std]
-use gstd::{prelude::*, Vec, BTreeMap, ActorId, msg};
+use gstd::{prelude::*, Vec, collections::BTreeMap, ActorId, msg};
 use gmeta::{Metadata, In, Out, InOut};
 
 pub struct ProgramMetadata;
@@ -11,12 +11,13 @@ pub type Expired = bool;
 impl Metadata for ProgramMetadata {
     type Init = In<InitMainContract>;
     type Handle = InOut<ContractAction, ContractEvent>;
+    type Others = InOut<ContractAction, ContractEvent>;
     type Reply = ();
-    type Others = ();
     type Signal = ();
-    type State = Out<State>;
+    type State = InOut<ContractStateQuery, ContractStateReply>;
 }
 
+#[derive(Clone)]
 pub struct Contract {
     pub owner: ActorId,
     pub basic_plan_price: u64,
@@ -140,12 +141,16 @@ impl Contract {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum BinaryLogic {
     One,
     Zero
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum XGNNAction {
     AcceptUser(ActorId),
     UserSubscriptionExpired(UserId),
@@ -154,6 +159,8 @@ pub enum XGNNAction {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum XGNNEvent {
     NeuronalNetworkCreated,
     UserIsNotTheOwner,
@@ -211,6 +218,37 @@ pub enum ContractEvent {
     NotTheOwner,
     Subscribed,
     WrongFunds(u64)
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum ContractStateQuery {
+    UserHasSubscription(ActorId),
+    UserSubscriptionType(ActorId),
+    FreeNNAdresses(ActorId),
+    BasicNNAdresses(ActorId),
+    UltimateNNAddresses(ActorId),
+    NeuralNetworkData {
+        nn_address: NeuronalNetworkId,
+        user_id: ActorId
+    },
+    All
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum ContractStateReply {
+    UserHasSubscription(bool),
+    UserSubscriptionType(SubscriptionType),
+    FreeNNAdresses(Vec<NeuronalNetworkId>),
+    BasicNNAdresses(Vec<NeuronalNetworkId>),
+    UltimateNNAddresses(Vec<NeuronalNetworkId>),
+    NeuralNetworkData(NeuronalNetworkData),
+    UserIsNotSubscribed,
+    NeuralNetworkAddresDoesNotExists,
+    All(State)
 }
 
 #[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]

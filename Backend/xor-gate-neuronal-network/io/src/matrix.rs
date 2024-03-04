@@ -1,39 +1,43 @@
 use gstd::{ prelude::*, Vec };
-use crate::{
-	multiplication_str::multiply_floats_strings,
-	sums_str::add_floats_strings,
-	subtraction_str::subtract_floats_strings
-};
+use crate::fraction::Fraction;
 
-/*
-use crate::{ 
-	multiply_floats_strings,
-	add_floats_strings,
-	subtract_floats_strings
-};
-*/
+// #[derive(Encode, Decode, TypeInfo, Clone)]
+// #[codec(crate = gstd::codec)]
+// #[scale_info(crate = gstd::scale_info)]
 
-
-#[derive(Encode, Decode, TypeInfo, Clone)]
+#[derive(Clone)]
 pub struct Matrix {
-	pub rows: u64,
-	pub cols: u64,
-	pub data: Vec<Vec<String>>,
+	pub rows: usize,
+	pub cols: usize,
+	pub data: Vec<Vec<Fraction>>,
 }
 
 impl Matrix {
-	pub fn zeros(rows: u64, cols: u64) -> Matrix {
+	pub fn zeros(rows: usize, cols: usize) -> Matrix {
+		// let mut cols_data = Vec::new();
+		// let mut rows_data = Vec::new();
+
+		// for _i in 0..cols {
+		// 	cols_data.push(Fraction::new_from_int(0));
+		// }
+		
+		// for i in 0..rows {
+		// 	rows_data.push(cols_data.clone());
+		// }
+
+		let data = vec![vec![Fraction::new_from_int(0); cols]; rows];
+
 		Matrix {
 			rows,
 			cols,
-			data: vec![vec![String::from("0.0"); cols as usize]; rows as usize],
+			data
 		}
 	}
 
-	pub fn from(data: Vec<Vec<String>>) -> Matrix {
+	pub fn from(data: Vec<Vec<Fraction>>) -> Matrix {
 		Matrix {
-			rows: data.len() as u64,
-			cols: data[0].len() as u64,
+			rows: data.len(),
+			cols: data[0].len(),
 			data,
 		}
 	}
@@ -45,21 +49,19 @@ impl Matrix {
 
 		let mut res = Matrix::zeros(self.rows, other.cols);
 
-		for i in 0..self.rows as usize {
-			for j in 0..other.cols as usize {
-				let mut sum = String::from("0.0");
-				for k in 0..self.cols as usize {
-					let multiply_result = multiply_floats_strings(
-						&self.data[i][k],
-						&other.data[k][j]
-					).unwrap();
-					sum = add_floats_strings(&sum, &multiply_result);
+		for i in 0..self.rows {
+			for j in 0..other.cols {
+				// let mut sum = 0.0;
+				let mut sum = Fraction::new_from_int(0);
+				for k in 0..self.cols {
+					let temp = self.data[i][k].mult(&other.data[k][j]);
+					sum.add_self(&temp);
 				}
 
 				res.data[i][j] = sum;
 			}
 		}
-		
+
 		res
 	}
 
@@ -70,15 +72,12 @@ impl Matrix {
 
 		let mut res = Matrix::zeros(self.rows, self.cols);
 
-		for i in 0..self.rows as usize {
-			for j in 0..self.cols as usize {
-				res.data[i][j] = add_floats_strings(
-					&self.data[i][j],
-					&other.data[i][j]
-				);
+		for i in 0..self.rows {
+			for j in 0..self.cols {
+				res.data[i][j] = self.data[i][j].add(&other.data[i][j]);
 			}
 		}
-		
+
 		res
 	}
 
@@ -89,12 +88,9 @@ impl Matrix {
 
 		let mut res = Matrix::zeros(self.rows, self.cols);
 
-		for i in 0..self.rows as usize {
-			for j in 0..self.cols as usize {
-				res.data[i][j] = multiply_floats_strings(
-					&self.data[i][j], 
-					&other.data[i][j]
-				).unwrap();
+		for i in 0..self.rows {
+			for j in 0..self.cols {
+				res.data[i][j] = self.data[i][j].mult(&other.data[i][j]);
 			}
 		}
 
@@ -108,19 +104,17 @@ impl Matrix {
 
 		let mut res = Matrix::zeros(self.rows, self.cols);
 
-		for i in 0..self.rows as usize {
-			for j in 0..self.cols as usize {
-				res.data[i][j] = subtract_floats_strings(
-					&self.data[i][j],
-					&other.data[i][j]
-				);
+		for i in 0..self.rows {
+			for j in 0..self.cols {
+				// res.data[i][j] = self.data[i][j] - other.data[i][j];
+				res.data[i][j] = self.data[i][j].sub(&other.data[i][j]);
 			}
 		}
 
 		res
 	}
 
-	pub fn map(&self, function: &dyn Fn(String) -> String) -> Matrix {
+	pub fn map(&self, function: &dyn Fn(Fraction) -> Fraction) -> Matrix {
 		Matrix::from(
 			(self.data)
 				.clone()
@@ -133,8 +127,8 @@ impl Matrix {
 	pub fn transpose(&self) -> Matrix {
 		let mut res = Matrix::zeros(self.cols, self.rows);
 
-		for i in 0..self.rows as usize {
-			for j in 0..self.cols as usize {
+		for i in 0..self.rows {
+			for j in 0..self.cols {
 				res.data[j][i] = self.data[i][j].clone();
 			}
 		}
@@ -149,7 +143,7 @@ impl Matrix {
 				data_str.push_str("        vec![\n");
 				data.iter()
 					.for_each(|num| {
-						data_str.push_str(&format!("            String::from(\"{}\"),\n", num)[..]);
+						data_str.push_str(&format!("            String::from(\"{:?}\"),\n", num)[..]);
 					});
 				data_str.push_str("        ],\n");
 			});

@@ -10,7 +10,7 @@ fn main() {
 }
 */
 
-use program_io::ProgramMetadata;
+use main_contract_io::ProgramMetadata;
 
 fn main() {
     gear_wasm_builder::build_with_metadata::<ProgramMetadata>();

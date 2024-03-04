@@ -1,27 +1,25 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "dapps-frontend",
+  "version": "1.0.2",
   "private": true,
+  "packageManager": "yarn@4.0.1",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "bump": "yarn up --exact",
+    "bump:api": "yarn bump @gear-js/api",
+    "bump:hooks": "yarn bump @gear-js/react-hooks",
+    "bump:ui": "yarn bump @gear-js/ui",
+    "bump:vara-ui": "yarn bump @gear-js/vara-ui",
+    "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
+    "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
+    "build:ui": "yarn workspace @dapps-frontend/ui build",
+    "build:hooks": "yarn workspace @dapps-frontend/hooks build",
+    "build:signless-transactions": "yarn workspace @dapps-frontend/signless-transactions build",
+    "build:gasless-transactions": "yarn workspace @dapps-frontend/gasless-transactions build",
+    "build:packages": "yarn build:error-tracking && yarn build:ui && yarn build:hooks && yarn build:signless-transactions && yarn build:gasless-transactions"
   },
-  "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "13.5.6"
-  },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10",
-    "postcss": "^8",
-    "tailwindcss": "^3",
-    "eslint": "^8",
-    "eslint-config-next": "13.5.6"
-  }
+  "workspaces": [
+    "./apps/*",
+    "./packages/*",
+    "./templates/*"
+  ]
 }

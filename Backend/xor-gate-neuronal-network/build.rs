@@ -10,7 +10,7 @@ fn main() {
 }
 */
 
-use program_io::ProgramMetadata;
+use xor_gate_neuronal_network_io::ProgramMetadata;
 
 fn main() {
     gear_wasm_builder::build_with_metadata::<ProgramMetadata>();
