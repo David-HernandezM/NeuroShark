@@ -1,0 +1,24 @@
+@use '@/assets/styles';
+@import 'global.css';
+
+body {
+  // background-image: url('./assets/images/bg.png');
+  // background-color: #2b2b2b;
+  background-color: #1E1E1E;
+}
+
+#root {
+  // display: flex;
+  // flex-direction: column;
+  // min-height: 100vh;
+  // max-width: 467px;
+  // margin-left: auto;
+  // margin-right: auto;
+  // background-color: #ffffff;
+}
+
+@font-face {
+  font-family: 'clash_display';
+  src: url('@/fonts/clash_display.ttf'); // ./fonts/clash_display.ttf
+  font-weight: normal;
+}

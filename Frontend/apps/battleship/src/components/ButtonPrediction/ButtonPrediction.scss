@@ -1,0 +1,18 @@
+.button-predict {
+    font-size: 20px;
+    font-weight:700;
+    min-width: 180px;
+    background-color: #51BBB1;
+    border-radius: 25px;
+    padding: 10px 15px;
+    color: black;
+    transition: all 0.2s;
+}
+
+.button-predict--hover:hover {
+    background-color: #3b8a82;
+}
+
+.button-predict--disabled {
+    opacity: 0.5;
+}

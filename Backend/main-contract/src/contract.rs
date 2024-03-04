@@ -1,5 +1,5 @@
-use gstd::{prelude::*, msg, exec};
-use program_io::{
+use gstd::{prelude::*, msg, exec, collections::BTreeMap};
+use main_contract_io::{
     InitMainContract,
     ContractAction,
     ContractEvent,
@@ -7,13 +7,16 @@ use program_io::{
     SubscriberData,
     Period,
     Contract,
-    State
+    State,
+    ContractStateQuery,
+    ContractStateReply,
+    NeuronalNetworkId
 };
 
 static mut CONTRACT: Option<Contract> = None;
 
 #[no_mangle]
-extern "C" fn init() {
+extern "C" fn intit() {
     let config: InitMainContract = msg::load()
         .expect("Error loading init message");
     
@@ -26,7 +29,7 @@ extern "C" fn init() {
             basic_nn_ids: Vec::new(),
             ultimate_nn_ids: Vec::new(),
             nn_data: BTreeMap::new(),
-            users_subscriptions: BTreeMap::new()
+            users_subscriptions: BTreeMap::new(),
         });
     };
 }
@@ -37,13 +40,18 @@ async fn main() {
         .expect("Error decoding 'ContractAction'");
     let contract = state_mut();
     
+    
     match message {
         ContractAction::AddNeuronalNetwork(nn_data) => {
-            if msg::source() != contract.owner {
-                msg::reply(ContractEvent::NotTheOwner, 0)
-                    .expect("Failed to send 'ContractEvent::NotTheOwner'");
-                return;
-            }
+            // if msg::source() != contract.owner {
+            //     msg::reply(ContractEvent::NotTheOwner, 0)
+            //         .expect("Failed to send 'ContractEvent::NotTheOwner'");
+            //     return;
+            // }
+
+            contract.free_nn_ids.push(nn_data.id);
+            contract.nn_data.insert(nn_data.id, nn_data.clone());
+
             msg::reply(contract.add_nn_data(nn_data), 0)
                 .expect("Failed to reply 'NeuronalNetworkAdded(NeuronalNetworkId)'");
         },
@@ -302,9 +310,90 @@ async fn main() {
 
 #[no_mangle]
 extern "C" fn state() {
-    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state")};
-    msg::reply::<State>(contract.into(), 0)
-        .expect("Failed to encode or reply with `State` from `state()`");
+    let message = msg::load()
+        .expect("Error loading message");
+    let contract = state_ref();
+
+    match message {
+        ContractStateQuery::UserHasSubscription(user_id) => {
+            let has_subscription = contract.users_subscriptions.contains_key(&user_id);
+
+            msg::reply(ContractStateReply::UserHasSubscription(has_subscription), 0)
+                .expect("Error sending reply");
+        },
+        ContractStateQuery::UserSubscriptionType(user_id) => {
+            let user_subscription_data = contract.users_subscriptions.get(&user_id);
+
+            if let Some(subscription_data) = user_subscription_data {
+                msg::reply(ContractStateReply::UserSubscriptionType(subscription_data.subscription_type.clone()), 0)
+                    .expect("Error sending reply state");
+            } else {
+                msg::reply(ContractStateReply::UserIsNotSubscribed, 0)
+                    .expect("Error sending reply state");
+            }
+        },
+        ContractStateQuery::FreeNNAdresses(user_id) => {
+            if  !contract.users_subscriptions.contains_key(&user_id) && contract.owner != user_id {
+                msg::reply(ContractStateReply::UserIsNotSubscribed, 0)
+                    .expect("Error sending reply state");
+                return;
+            }
+
+            let free_nn_addresses = contract.free_nn_ids.clone();
+
+            msg::reply(ContractStateReply::FreeNNAdresses(free_nn_addresses), 0)
+                    .expect("Error sending reply state");
+        },
+        ContractStateQuery::BasicNNAdresses(user_id) => {
+            if  !contract.users_subscriptions.contains_key(&user_id) && contract.owner != user_id {
+                msg::reply(ContractStateReply::UserIsNotSubscribed, 0)
+                    .expect("Error sending reply state");
+                return;
+            }
+
+            let basic_nn_address = contract.basic_nn_ids.clone();
+
+            msg::reply(ContractStateReply::BasicNNAdresses(basic_nn_address), 0)
+                    .expect("Error sending reply state");
+        },
+        ContractStateQuery::UltimateNNAddresses(user_id) => {
+            if  !contract.users_subscriptions.contains_key(&user_id) && contract.owner != user_id {
+                msg::reply(ContractStateReply::UserIsNotSubscribed, 0)
+                    .expect("Error sending reply state");
+                return;
+            }
+
+            let ultimate_nn_address = contract.ultimate_nn_ids.clone();
+
+            msg::reply(ContractStateReply::UltimateNNAddresses(ultimate_nn_address), 0)
+                    .expect("Error sending reply state");
+        },
+        ContractStateQuery::NeuralNetworkData {
+            nn_address,
+            user_id
+        } => {
+            if  !contract.users_subscriptions.contains_key(&user_id) && contract.owner != user_id {
+                msg::reply(ContractStateReply::UserIsNotSubscribed, 0)
+                    .expect("Error sending reply state");
+                return;
+            }
+
+            let Some(contract_data) = contract.nn_data.get(&nn_address) else {
+                msg::reply(ContractStateReply::NeuralNetworkAddresDoesNotExists, 0)
+                    .expect("Error sending reply state");
+                return;
+            };
+
+            msg::reply(ContractStateReply::NeuralNetworkData(contract_data.clone()), 0)
+                    .expect("Error sending reply state");
+        }
+        ContractStateQuery::All => {
+            let state: State = contract.clone().into();
+
+            msg::reply(ContractStateReply::All(state), 0)
+                    .expect("Error sending reply state");
+        }
+    }
 }
 
 fn state_mut() -> &'static mut Contract {

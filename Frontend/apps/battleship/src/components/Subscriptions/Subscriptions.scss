@@ -1,0 +1,20 @@
+.subscriptions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.subscriptions-tittle {
+    font-size: 50px;
+    font-weight: 600;
+    color: #43948E;
+}
+
+.subscriptions-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+}

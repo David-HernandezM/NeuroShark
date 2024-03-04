@@ -1,0 +1,41 @@
+@use '@gear-js/ui/variables' as *;
+
+.wallet {
+  display: flex;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+  gap: 15px;
+}
+
+.balanceContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.balanceText {
+  color: white;
+  font-size: 12px;
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: white;
+  height: 100%;
+  font-family: clash_display;
+  margin-bottom: 0;
+}
+
+.currency {
+  color: #2BD071; //$textColorSecondary;
+  // color: rgb(58, 11, 105);
+  font-size: 13px;
+}
+
+@media screen and (max-width: 600px) {
+  .wallet {
+    display: none;
+  }
+}

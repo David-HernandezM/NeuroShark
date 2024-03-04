@@ -1,0 +1,10 @@
+[package]
+name = "doodles-prediction-neuronal-network-io"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta.workspace = true
+#gear-lib.workspace = true
+

@@ -3,9 +3,12 @@ resolver = "2"
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
 members = [
+    "doodles-prediction-neuronal-network",
+    "main-contract",
+    "oracle-server",
     "ping-pong",
     "ping-pong/state",
-    "oracle-server"
+    "xor-gate-neuronal-network"
 ]
 
 [workspace.package]
@@ -21,25 +24,28 @@ publish = false
 # Local IO-crates
 # Keep in the lexicographic order!
 
+doodles-prediction-neuronal-network-io.path = "doodles-prediction-neuronal-network/io"
+main-contract-io.path = "main-contract/io"
 ping-pong-io.path = "ping-pong/io"
+xor-gate-neuronal-network-io.path = "xor-gate-neuronal-network/io"
 
 # Gear
 
-galloc = "1.1.0"
-gcli = "1.1.0"
-gclient = "1.1.0"
-gcore = "1.1.0"
-gear-wasm-builder = "1.1.0"
-gmeta = "1.1.0"
-gsdk = "1.1.0"
-gstd = "1.1.0"
-gtest = "1.1.0"
+galloc = "1.1.1"
+gcli = "1.1.1"
+gclient = "1.1.1"
+gcore = "1.1.1"
+gear-wasm-builder = "1.1.1"
+gmeta = "1.1.1"
+gsdk = "1.1.1"
+gstd = "1.1.1"
+gtest = "1.1.1"
 
 # External
 
 primitive-types = { version = "0.12", default-features = false }
-sp-core = { version = "22", default-features = false, features = ["full_crypto", "sp-externalities"] }
-sp-core-hashing = { version = "10", default-features = false }
+sp-core = { version = "29.0.0", default-features = false, features = ["full_crypto", "sp-externalities"] }
+sp-core-hashing = { version = "16", default-features = false }
 tokio = "1"
 blake2-rfc = "0.2"
 hex-literal = "0.4"
@@ -49,7 +55,7 @@ rand = { version = "0.8", default-features = false }
 rand_xoshiro = "0.6"
 indexmap = { version = "2", default-features = false }
 ahash = { version = "0.8", default-features = false, features = ["compile-time-rng"] }
-schnorrkel = { version = "0.10", default-features = false, features = ["u64_backend"] }
+schnorrkel = { version = "0.11.4", default-features = false, features = ["u64_backend"] }
 syn = { version = "2", default-features = false }
 quote = "1"
 clap = { version = "4", default-features = false, features = ["std"] }

@@ -16,3 +16,4 @@ hex = "0.4.3"
 gstd = "1.0.4"
 hex-literal = "0.4.1"
 hex_fmt = "0.3.0"
+doodles-prediction-neuronal-network-io.workspace = true
